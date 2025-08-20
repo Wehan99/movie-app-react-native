@@ -1,6 +1,9 @@
 {
   "expo": {
     "name": "movie-app",
+    "extra": {
+      "tmdbApiKey": "${EXPO_PUBLIC_TMDB_API_KEY}"
+    },
     "slug": "movie-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -33,7 +36,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

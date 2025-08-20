@@ -1,75 +1,92 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  StatusBar,
+} from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import * as Font from 'expo-font';
+import { Figtree_400Regular, Figtree_700Bold } from '@expo-google-fonts/figtree';
+import MovieList from '@/components/MovieList';
+import { usePopularMovies } from '@/hooks/usePopularMovies';
+import MovieCard from '@/components/MovieCard';
 
-export default function HomeScreen() {
+
+export default function HomePage() {
+  const [fontLoaded, setFontLoaded] = useState(false);
+
+  const { data: movies, isLoading, error } = usePopularMovies();
+
+  useEffect(() => {
+    async function loadFont() {
+      await Font.loadAsync({
+        Figtree_Regular: Figtree_400Regular,
+        Figtree_Bold: Figtree_700Bold,
+      });
+      setFontLoaded(true);
+    }
+    loadFont();
+  }, []);
+
+  if (!fontLoaded) {
+    return null; // or a loading spinner
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a1a1a" />
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.appTitle}>Movieract</Text>
+
+    
+          <View style={styles.movieSection}>
+            <Text style={styles.sectionTitle}>Popular Movies</Text>
+           <MovieList
+            data={movies || []}
+            isLoading={isLoading}
+            error={error}
+            renderItem={(item) => <MovieCard movie={item} />}
+            emptyText="No popular movies available."
+          />
+          </View>
+
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#1a1a1a', // Dark theme background
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  container: {
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    backgroundColor: '#1a1a1a',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  appTitle: {
+    fontFamily: 'Figtree_Bold',
+    color: '#ffffff',
+    fontSize: 32,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 30,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+  },
+  movieSection: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontFamily: 'Figtree_Bold',
+    color: '#ffffff',
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 15,
+    paddingHorizontal: 5,
   },
 });

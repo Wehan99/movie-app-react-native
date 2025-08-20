@@ -1,29 +1,57 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
+import './globals.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <View style={styles.container}>
+        <Stack>
+          <Stack.Screen
+            name="(tabs)"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="onboarding"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="movie/[id]"
+            options={{
+              headerShown: true,
+              title: 'Movie Details',
+            }}
+          />
+          <Stack.Screen
+            name="(tabs)/saved"
+            options={{
+              title: 'Saved Movies',
+            }}
+          />
+          <Stack.Screen
+            name="(tabs)/profile"
+            options={{
+              title: 'Profile',
+            }}
+          />
+        </Stack>
+        <StatusBar style="light" backgroundColor="#1a1a1a" />
+      </View>
+    </QueryClientProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1a1a1a', // Match your dark theme
+  },
+});
