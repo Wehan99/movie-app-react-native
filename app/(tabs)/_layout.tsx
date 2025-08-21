@@ -1,50 +1,106 @@
-import { StyleSheet } from 'react-native'
-import React from 'react'
-import { Tabs } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+
+import React from 'react';
+
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Tabs } from 'expo-router';
+
+
+
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+
+const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+  return (
+    <View className="absolute bottom-10 left-2 right-2 bg-gray-900 rounded-full p-3 flex-row justify-around items-center shadow-lg">
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        let iconName;
+        switch (route.name) {
+          case 'index':
+            iconName = 'home';
+            break;
+          case 'saved':
+            iconName = 'file-tray';
+            break;
+          case 'search':
+            iconName = 'search';
+            break;
+          case 'profile':
+            iconName = 'person';
+            break;
+          default:
+            iconName = 'home';
+        }
+
+        return (
+          <TouchableOpacity
+            key={route.key}
+            onPress={onPress}
+            className={`p-3 items-center rounded-full ${isFocused ? 'bg-gray-800' : ''}`}
+          >
+            <Ionicons
+              name={iconName}
+              size={24}
+              color={isFocused ? '#007AFF' : '#ffffff'}
+            />
+       
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+};
 
 const _layout = () => {
   return (
-    <Tabs screenOptions={{
-      tabBarStyle: { backgroundColor: '#fff' },
-      tabBarActiveTintColor: '#007AFF',
-    }}>
-      <Tabs.Screen name="index"
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+      }}
+      tabBar={(props) => <CustomTabBar {...props} />}
+    >
+      <Tabs.Screen
+        name="index"
         options={{
           title: 'Home',
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
-        }} />
-      <Tabs.Screen name="saved"
+        }}
+      />
+      <Tabs.Screen
+        name="saved"
         options={{
           title: 'Saved Movies',
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="file-tray" size={size} color={color} />
-          ),
-        }} />
-      <Tabs.Screen name="search"
+        }}
+      />
+      <Tabs.Screen
+        name="search"
         options={{
           title: 'Search',
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search" size={size} color={color} />
-          ),
-        }} />
-      <Tabs.Screen name="profile"
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
         options={{
           title: 'Profile',
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
-          ),
-        }} />
+        }}
+      />
     </Tabs>
-  )
-}
+  );
+};
 
-export default _layout
+export default _layout;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
