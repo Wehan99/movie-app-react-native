@@ -4,6 +4,8 @@ import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Tabs } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+
 
 
 
@@ -13,10 +15,11 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
   return (
     <View className="absolute bottom-10 left-2 right-2 bg-gray-900 rounded-full p-3 flex-row justify-around items-center shadow-lg">
       {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
+        const { s } = descriptors[route.key];
         const isFocused = state.index === index;
 
-        const onPress = () => {
+        const onPress = async () => {
+          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
